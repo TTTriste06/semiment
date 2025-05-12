@@ -1,6 +1,6 @@
 import pandas as pd
 
-def apply_mapping_with_merge(df, mapping_df, spec_col, prod_col, wafer_col, show_changes=True):
+def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_changes=True):
     """
     替换料号后，合并新料号一致的行（即多旧料号映射到同一新料号时合并数量）。
     """
