@@ -51,11 +51,10 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
         '旧规格', '旧品名', '旧晶圆品名', '新规格', '新品名', '新晶圆品名',
         '_原规格', '_原品名', '_原晶圆'
     ], inplace=True, errors='ignore')
+
+    # 聚合所有数值列
+    group_cols = [col for col in df.columns if col not in df.select_dtypes(include='number').columns]
+    agg_cols = df.select_dtypes(include='number').columns.tolist()
+    df_merged = df.groupby(group_cols, as_index=False)[agg_cols].sum()
     
-    return df
-
-def merge_by_new_material(df, wafer_col, spec_col, prod_col):
-    group_cols = [wafer_col, spec_col, prod_col]
-    value_cols = df.select_dtypes(include='number').columns.tolist()
-    return df.groupby(group_cols, as_index=False)[value_cols].sum()
-
+    return df_merged
