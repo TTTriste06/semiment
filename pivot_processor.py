@@ -1,5 +1,5 @@
 import pandas as pd
-from preprocessing import apply_mapping_and_merge
+from preprocessing import apply_full_mapping
 from excel_utils import process_date_column
 from config import CONFIG
 
@@ -35,7 +35,7 @@ def create_pivot(df, config, filename, mapping_df=None):
 
     # 对未交订单文件做额外的料号映射
     if mapping_df is not None and filename == "赛卓-未交订单.xlsx":
-        pivoted = apply_mapping_and_merge(pivoted, mapping_df)
+        pivoted = apply_full_mapping(pivoted, mapping_df)
 
     # 对未交订单文件进行历史订单汇总
     if CONFIG['selected_month'] and filename == "赛卓-未交订单.xlsx":
