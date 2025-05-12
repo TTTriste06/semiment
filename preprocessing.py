@@ -52,9 +52,21 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
         '_原规格', '_原品名', '_原晶圆'
     ], inplace=True, errors='ignore')
 
-    # 聚合所有数值列
-    group_cols = [col for col in df.columns if col not in df.select_dtypes(include='number').columns]
-    agg_cols = df.select_dtypes(include='number').columns.tolist()
-    df_merged = df.groupby(group_cols, as_index=False)[agg_cols].sum()
-    
-    return df_merged
+    return df
+
+def merge_by_material_keys(df, mapping: dict):
+    """
+    只根据当前文件的晶圆品名、规格、品名列合并（其他字段不参与分组）
+    """
+    wafer_col = mapping["晶圆品名"]
+    spec_col = mapping["规格"]
+    prod_col = mapping["品名"]
+
+    if not all(col in df.columns for col in [wafer_col, spec_col, prod_col]):
+        raise ValueError(f"字段缺失：{wafer_col}, {spec_col}, {prod_col}")
+
+    group_cols = [wafer_col, spec_col, prod_col]
+    value_cols = df.select_dtypes(include='number').columns.tolist()
+
+    return df.groupby(group_cols, as_index=False)[value_cols].sum()
+
