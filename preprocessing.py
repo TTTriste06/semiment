@@ -51,5 +51,10 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
         '旧规格', '旧品名', '旧晶圆品名', '新规格', '新品名', '新晶圆品名',
         '_原规格', '_原品名', '_原晶圆'
     ], inplace=True, errors='ignore')
-
+    
+    # 🔁 合并：新规格、新品名、新晶圆品名一致的行
+    group_cols = [col for col in df.columns if df[col].dtype == 'object']
+    value_cols = df.select_dtypes(include='number').columns.tolist()
+    df = df.groupby(group_cols, as_index=False)[value_cols].sum()
+    
     return df
