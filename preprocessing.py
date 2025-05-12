@@ -1,5 +1,4 @@
 import pandas as pd
-from config import MAPPING_COLUMNS
 
 def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col):
     """
