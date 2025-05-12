@@ -77,26 +77,7 @@ def main():
                     summary_df = pivoted[['晶圆品名', '规格', '品名']].drop_duplicates()
                     pending_df = pivoted.copy()
 
-            # 汇总 sheet 初步写入
-            summary_df.to_excel(writer, sheet_name='汇总', index=False, startrow=1)
-            summary_sheet = writer.sheets['汇总']
-
-            # 加入安全库存
-            df_safety = pd.read_excel(safety_file) if safety_file else download_excel_from_repo("safety_file.xlsx")
-            merged_summary_df, df_safety = merge_safety_inventory(summary_df, df_safety, summary_sheet)
-
-            # 加入未交订单
-            if pending_df is not None:
-                start_col = summary_df.shape[1] + 2 + 1
-                _ = merge_unfulfilled_orders(summary_sheet, pending_df, start_col)
-
-            # 加入预测
-            df_pred = pd.read_excel(pred_file) if pred_file else download_excel_from_repo("pred_file.xlsx")
-            df_pred = merge_prediction_data(summary_sheet, df_pred, summary_df)
-
-            # 样式调整
-            auto_adjust_column_width_by_worksheet(summary_sheet)
-            add_black_border(summary_sheet, 2, summary_sheet.max_column)
+            
 
         # 下载按钮
         with open(OUTPUT_FILE, 'rb') as f:
