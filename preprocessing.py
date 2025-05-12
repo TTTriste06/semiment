@@ -11,7 +11,6 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
     mapping_df = mapping_df.iloc[:, :len(full_cols)]
     mapping_df.columns = full_cols
 
-    st.write(mapping_df)
 
     # 创建副本避免原表被修改
     df = df.copy()
