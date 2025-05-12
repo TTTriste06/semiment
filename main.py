@@ -59,7 +59,6 @@ def main():
                     if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
                         try:
                             df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
-                            df = merge_by_material_keys(df, mapping)
                         except Exception as e:
                             st.warning(f"⚠️ 文件 {filename} 替换失败: {e}")
                     else:
