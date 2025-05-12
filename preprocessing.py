@@ -51,15 +51,16 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
         '旧规格', '旧品名', '旧晶圆品名', '新规格', '新品名', '新晶圆品名',
         '_原规格', '_原品名', '_原晶圆'
     ], inplace=True, errors='ignore')
-    
-    return df
 
-def merge_by_new_part(df, spec_col, prod_col, wafer_col):
-    """
-    合并新规格、新品名、新晶圆品名一致的行，数值求和。
-    """
+    # ✅ 更明确地只用指定三项作为分组键合并，不合并其他 object 列
     group_cols = [wafer_col, spec_col, prod_col]
     value_cols = df.select_dtypes(include='number').columns.tolist()
-    df_merged = df.groupby(group_cols, as_index=False)[value_cols].sum()
-    return df_merged
+    
+    # 若三个列中有缺失，不执行聚合
+    if all(col in df.columns for col in group_cols):
+        df = df.groupby(group_cols, as_index=False)[value_cols].sum()
+    else:
+        st.warning(f"⚠️ 无法合并：DataFrame 缺少必要字段 {group_cols}")
 
+    
+    return df
