@@ -8,7 +8,7 @@ from config import (
     FULL_MAPPING_COLUMNS, COLUMN_MAPPING
 )
 from github_utils import upload_to_github, download_excel_from_url, download_excel_from_repo
-from preprocessing import apply_full_mapping
+from preprocessing import apply_full_mapping, merge_by_material_keys
 from pivot_processor import create_pivot
 from excel_utils import adjust_column_width, auto_adjust_column_width_by_worksheet, add_black_border
 from merge_sections import (
@@ -59,6 +59,7 @@ def main():
                     if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
                         try:
                             df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
+                            df = merge_by_material_keys(df, mapping)
                         except Exception as e:
                             st.warning(f"⚠️ 文件 {filename} 替换失败: {e}")
                     else:
