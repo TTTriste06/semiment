@@ -52,11 +52,6 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
         '_原规格', '_原品名', '_原晶圆'
     ], inplace=True, errors='ignore')
     
-    # 合并一致的行
-    group_cols = [col for col in df.columns if df[col].dtype == 'object']
-    value_cols = df.select_dtypes(include='number').columns.tolist()
-    df = df.groupby(group_cols, as_index=False)[value_cols].sum()
-
     return df
 
 def merge_by_new_part(df, spec_col, prod_col, wafer_col):
