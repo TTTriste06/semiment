@@ -59,6 +59,11 @@ def main():
                     if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
                         try:
                             df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
+                            # 合并相同新料号行（只聚合目标字段）
+                            group_cols = [wafer_col, spec_col, prod_col]
+                            value_cols = df.select_dtypes(include='number').columns.tolist()
+                            df = df.groupby(group_cols, as_index=False)[value_cols].sum()
+
                         except Exception as e:
                             st.warning(f"⚠️ 文件 {filename} 替换失败: {e}")
                     else:
