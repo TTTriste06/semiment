@@ -47,12 +47,12 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
             st.info("ℹ️ 没有记录发生料号替换")
 
     # 删除辅助列
-    ## df.drop(columns=['旧规格', '旧品名', '旧晶圆品名', '新规格', '新品名', '新晶圆品名',
-    ##                 '_原规格', '_原品名', '_原晶圆'], inplace=True)
+    df.drop(columns=['旧规格', '旧品名', '旧晶圆品名', '新规格', '新品名', '新晶圆品名',
+                    '_原规格', '_原品名', '_原晶圆'], inplace=True)
 
     # 聚合相同的新料号行（合并数值列）
     group_cols = [col for col in df.columns if col not in df.select_dtypes(include='number').columns]
     numeric_cols = df.select_dtypes(include='number').columns.tolist()
-    df = df.groupby(group_cols, as_index=False)[numeric_cols].sum()
+    #df = df.groupby(group_cols, as_index=False)[numeric_cols].sum()
 
     return df
