@@ -3,21 +3,23 @@ from preprocessing import apply_full_mapping
 from excel_utils import process_date_column
 from config import CONFIG
 
+def process_date_column(df, date_col, date_format):
+    """处理日期列，将其转换为 datetime 并创建格式化列"""
+    df = df.copy()
+    if pd.api.types.is_numeric_dtype(df[date_col]):
+        df[date_col] = pd.to_datetime('1899-12-30') + pd.to_timedelta(df[date_col], unit='D')
+    else:
+        df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
+    df[f"{date_col}_年月"] = df[date_col].dt.strftime(date_format)
+    return df
 
-def create_pivot(df, config, filename, mapping_df=None):
+def create_pivot(df, config, filename):
     """
-    根据配置创建透视表（支持多 index / columns / values），可选进行新旧料号映射。
+    根据配置创建透视表（支持多 index / columns / values）
     """
     df_copy = df.copy()
 
-    # 添加 "_年月" 列（如果有日期格式要求）
-    if 'date_format' in config and config.get('columns') in df_copy.columns:
-        df_copy = process_date_column(df_copy, config['columns'], config['date_format'])
-        config = config.copy()  # 不修改原始配置
-        config['columns'] = f"{config['columns']}_年月"
-
     try:
-        # 创建透视表
         pivoted = pd.pivot_table(
             df_copy,
             index=config['index'],
@@ -30,17 +32,11 @@ def create_pivot(df, config, filename, mapping_df=None):
         st.warning(f"⚠️ 创建透视表失败，字段缺失: {e}")
         return pd.DataFrame()
 
-    # 扁平化多层列名（例如：('订单数量', '2025-03') → '订单数量_2025-03'）
     pivoted.columns = [
         f"{col[0]}_{col[1]}" if isinstance(col, tuple) else str(col)
         for col in pivoted.columns
     ]
     pivoted = pivoted.reset_index()
-
-    # 对未交订单文件进行历史订单汇总
-    if CONFIG['selected_month'] and filename == "赛卓-未交订单.xlsx":
-        pivoted = add_historical_order_columns(pivoted, config)
-
     return pivoted
 
 
