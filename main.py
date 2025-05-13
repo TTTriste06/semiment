@@ -30,24 +30,16 @@ def main():
     mapping_df = None
     safety_df = None
     pred_df = None
-
     if safety_file:
         safety_df = pd.read_excel(safety_file)
         upload_to_github(safety_file, "safety_file.xlsx", "上传安全库存文件")
     else:
         safety_df = download_excel_from_repo("safety_file.xlsx")
-    
-
     if pred_file:
         pred_df = pd.read_excel(pred_file)
         upload_to_github(pred_file, "pred_file.xlsx", "上传预测文件")
     else:
         pred_df = download_excel_from_repo("pred_file.xlsx")
-
-
-
-    
-    
     if mapping_file:
         mapping_df = pd.read_excel(mapping_file)
         upload_to_github(mapping_file, "mapping_file.xlsx", "上传新旧料号文件")
@@ -59,7 +51,8 @@ def main():
     if st.button('提交并生成报告') and uploaded_files:
         with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
             st.write(uploaded_files)
-             for f in uploaded_files:
+            
+            for f in uploaded_files:
                 filename = f.name
                 if filename not in PIVOT_CONFIG:
                     st.warning(f"跳过未配置的文件: {filename}")
