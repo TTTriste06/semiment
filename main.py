@@ -57,7 +57,7 @@ def main():
     
 
     if st.button('提交并生成报告') and uploaded_files:
-        with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
+        with pd.ExcelWriter(CONFIG['output_file'], engine='openpyxl') as writer:
     
              for f in uploaded_files:
                 filename = f.name
