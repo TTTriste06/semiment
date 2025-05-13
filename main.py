@@ -59,6 +59,7 @@ def main():
                 # 替换新旧料号
                 if filename in COLUMN_MAPPING:
                     mapping = COLUMN_MAPPING[filename]
+                    st.write(mapping)
                     spec_col, prod_col, wafer_col = mapping["规格"], mapping["品名"], mapping["晶圆品名"]
                     if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
                         df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
@@ -67,7 +68,6 @@ def main():
                 else:
                     st.info(f"📂 文件 {filename} 未定义映射字段，跳过 apply_full_mapping")
 
-                st.write(uploaded_files)
                 pivoted = create_pivot(df, config, filename, mapping_df)
                 sheet_name = filename[:30].rstrip('.xlsx')
                 pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
