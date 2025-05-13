@@ -71,6 +71,8 @@ def main():
                 else:
                     st.info(f"📂 文件 {filename} 未定义映射字段，跳过 apply_full_mapping")
 
+
+                st.write(df)
                 # 透视
                 st.write("1")
                 pivoted = create_pivot(df, PIVOT_CONFIG[filename], filename)
