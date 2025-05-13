@@ -29,6 +29,16 @@ def main():
     # 加载文件
     mapping_df = None
 
+    if safety_file:
+        safety_df = pd.read_excel(safety_file)
+        upload_to_github(safety_file, "safety_file.xlsx", "上传安全库存文件")
+    else:
+        safety_df = download_excel_from_repo("safety_file.xlsx")
+
+    st.write(safety_file)
+    st.write(type(safety_file))
+    
+
     if pred_file:
         pred_df = pd.read_excel(pred_file)
         upload_to_github(pred_file, "pred_file.xlsx", "上传预测文件")
@@ -38,14 +48,6 @@ def main():
     st.write(pred_file)
     st.write(type(pred_file))
     
-    if safety_file:
-        safety_df = pd.read_excel(safety_file)
-        upload_to_github(safety_file, "safety_file.xlsx", "上传安全库存文件")
-    else:
-        safety_df = download_excel_from_repo("safety_file.xlsx")
-
-    st.write(safety_file)
-    st.write(type(safety_file))
     
     if mapping_file:
         mapping_df = pd.read_excel(mapping_file)
