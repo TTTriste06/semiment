@@ -39,6 +39,7 @@ def main():
         with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
             summary_df = pd.DataFrame()
             pending_df = None
+            any_sheet_written = False
 
             for f in uploaded_files:
                 filename = f.name
@@ -69,9 +70,7 @@ def main():
                 # 透视
                 pivoted = create_pivot(df, PIVOT_CONFIG[filename], filename, mapping_df)
                 sheet_name = filename.replace('.xlsx', '')[:30]
-                # ✅ 强制兜底写入一个默认 Sheet，防止 openpyxl 报错
-                if not writer.sheets:
-                    pd.DataFrame({"提示": ["未写入任何有效数据"]}).to_excel(writer, sheet_name="提示", index=False)
+                pd.DataFrame({"提示": ["未写入任何有效数据"]}).to_excel(writer, sheet_name="提示", index=False)
 
                 pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
                 adjust_column_width(writer, sheet_name, pivoted)
@@ -80,28 +79,39 @@ def main():
                 if filename == "赛卓-未交订单.xlsx":
                     summary_df = pivoted[['晶圆品名', '规格', '品名']].drop_duplicates()
                     pending_df = pivoted.copy()
+
+               
+
+            # ✅ 汇总写入
+            if not summary_df.empty:
+                summary_df.to_excel(writer, sheet_name='汇总', index=False, startrow=1)
+                summary_sheet = writer.sheets['汇总']
+
+                 # 加入安全库存
+                df_safety = pd.read_excel(safety_file) if safety_file else download_excel_from_repo("safety_file.xlsx")
+                merged_summary_df, df_safety = merge_safety_inventory(summary_df, df_safety, summary_sheet)
+    
+                # 加入未交订单
+                if pending_df is not None:
+                    start_col = summary_df.shape[1] + 2 + 1
+                    _ = merge_unfulfilled_orders(summary_sheet, pending_df, start_col)
+    
+                # 加入预测
+                df_pred = pd.read_excel(pred_file) if pred_file else download_excel_from_repo("pred_file.xlsx")
+                df_pred = merge_prediction_data(summary_sheet, df_pred, summary_df)
+    
+                # 样式调整
+                auto_adjust_column_width_by_worksheet(summary_sheet)
+                add_black_border(summary_sheet, 2, summary_sheet.max_column)
+
+                any_sheet_written = True
+        
+            # ✅ 如果真的一个 sheet 都没写，最后兜底写一个
+            if not any_sheet_written:
+                pd.DataFrame({"提示": ["未写入任何有效数据"]}).to_excel(writer, sheet_name="提示", index=False)
+                    
+          
             
-            # 汇总 sheet 初步写入
-            summary_df.to_excel(writer, sheet_name='汇总', index=False, startrow=1)
-            summary_sheet = writer.sheets['汇总']
-            
-            # 加入安全库存
-            df_safety = pd.read_excel(safety_file) if safety_file else download_excel_from_repo("safety_file.xlsx")
-            merged_summary_df, df_safety = merge_safety_inventory(summary_df, df_safety, summary_sheet)
-
-            # 加入未交订单
-            if pending_df is not None:
-                start_col = summary_df.shape[1] + 2 + 1
-                _ = merge_unfulfilled_orders(summary_sheet, pending_df, start_col)
-
-            # 加入预测
-            df_pred = pd.read_excel(pred_file) if pred_file else download_excel_from_repo("pred_file.xlsx")
-            df_pred = merge_prediction_data(summary_sheet, df_pred, summary_df)
-
-            # 样式调整
-            auto_adjust_column_width_by_worksheet(summary_sheet)
-            add_black_border(summary_sheet, 2, summary_sheet.max_column)
-
 
         # 下载按钮
         with open(OUTPUT_FILE, 'rb') as f:
