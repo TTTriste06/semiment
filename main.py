@@ -59,6 +59,7 @@ def main():
                     continue
 
                 df = pd.read_excel(f)
+                st.write(df)
 
                 # 替换新旧料号
                 if filename in COLUMN_MAPPING:
