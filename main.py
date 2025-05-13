@@ -43,6 +43,7 @@ def main():
 
             for f in uploaded_files:
                 filename = f.name
+                st.write(filename)
             
                 if filename not in PIVOT_CONFIG:
                     st.warning(f"跳过未配置的文件: {filename}")
@@ -50,7 +51,6 @@ def main():
             
                 df = pd.read_excel(f)
 
-                st.write(filename)
                 # 统一新旧料号映射（若该文件定义了列名映射）
                 if filename in COLUMN_MAPPING:
                     mapping = COLUMN_MAPPING[filename]
