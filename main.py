@@ -37,7 +37,6 @@ def main():
     else:
         safety_df = download_excel_from_repo("safety_file.xlsx")
 
-    st.write(safety_df)
     st.write(type(safety_df))
     
 
@@ -47,7 +46,7 @@ def main():
     else:
         pred_df = download_excel_from_repo("pred_file.xlsx")
 
-    st.write(pred_df)
+
     st.write(type(pred_df))
     
     
@@ -56,7 +55,7 @@ def main():
         upload_to_github(mapping_file, "mapping_file.xlsx", "上传新旧料号文件")
     else:
         mapping_df = download_excel_from_repo("mapping_file.xlsx")
-    st.write(mapping_df)
+    
     st.write(type(mapping_df))
 
     if st.button('提交并生成报告') and uploaded_files:
