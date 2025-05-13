@@ -69,6 +69,10 @@ def main():
                 # 透视
                 pivoted = create_pivot(df, PIVOT_CONFIG[filename], filename, mapping_df)
                 sheet_name = filename.replace('.xlsx', '')[:30]
+                # ✅ 强制兜底写入一个默认 Sheet，防止 openpyxl 报错
+                if not writer.sheets:
+                    pd.DataFrame({"提示": ["未写入任何有效数据"]}).to_excel(writer, sheet_name="提示", index=False)
+
                 pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
                 adjust_column_width(writer, sheet_name, pivoted)
 
