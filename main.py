@@ -64,6 +64,7 @@ def main():
                     spec_col, prod_col, wafer_col = mapping["规格"], mapping["品名"], mapping["晶圆品名"]
                     if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
                         df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
+                        st.write(df)
                     else:
                         st.warning(f"⚠️ 文件 {filename} 缺少字段: {spec_col}, {prod_col}, {wafer_col}")
                 else:
