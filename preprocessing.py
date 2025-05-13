@@ -1,6 +1,20 @@
 import pandas as pd
 import streamlit as st
 
+def load_df(uploaded, fallback_filename, shown):
+    """
+    如果上传了文件，就用 pd.read_excel 读取它；
+    否则调用 download_excel_from_repo 下载并直接返回 DataFrame。
+    """
+    if uploaded is not None:
+        return pd.read_excel(uploaded)
+        upload_to_github(uploaded, fallback_filename, shown)
+    else:
+        return download_excel_from_repo(fallback_filename)
+
+  
+        
+
 def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_changes=True):
     """
     替换料号后，立即合并新料号一致的行（即多旧料号映射到同一新料号时合并数量）。
