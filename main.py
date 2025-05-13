@@ -36,8 +36,6 @@ def main():
         upload_to_github(safety_file, "safety_file.xlsx", "上传安全库存文件")
     else:
         safety_df = download_excel_from_repo("safety_file.xlsx")
-
-    st.write(type(safety_df))
     
 
     if pred_file:
@@ -47,7 +45,7 @@ def main():
         pred_df = download_excel_from_repo("pred_file.xlsx")
 
 
-    st.write(type(pred_df))
+
     
     
     if mapping_file:
@@ -56,7 +54,7 @@ def main():
     else:
         mapping_df = download_excel_from_repo("mapping_file.xlsx")
     
-    st.write(type(mapping_df))
+    
 
     if st.button('提交并生成报告') and uploaded_files:
         with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
