@@ -75,8 +75,8 @@ def main():
                 st.info(f"📂 文件 {filename} 未定义列名映射，跳过新旧料号替换")
     
             # 日期格式处理
-            if filename in CONFIG['pivot_config']:
-                pivot_cfg = CONFIG['pivot_config'][filename]
+            if filename in PIVOT_CONFIG:
+                pivot_cfg = PIVOT_CONFIG[filename]
                 if 'date_format' in pivot_cfg and pivot_cfg['columns'] in df.columns:
                     df = process_date_column(df, pivot_cfg['columns'], pivot_cfg['date_format'])
     
