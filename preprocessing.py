@@ -51,15 +51,7 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
         '_原规格', '_原品名', '_原晶圆'
     ], inplace=True, errors='ignore')
 
-    # ✅ 合并规格、品名、晶圆品名一致的行
-    group_keys = [spec_col, prod_col, wafer_col]
-    numeric_cols = df.select_dtypes(include='number').columns.tolist()
-    other_cols = [col for col in df.columns if col not in group_keys + numeric_cols]
-
-    df = df.groupby(group_keys, as_index=False).agg(
-        {**{col: 'sum' for col in numeric_cols},
-         **{col: 'first' for col in other_cols}}
-    )
+   
     
     
     return df
