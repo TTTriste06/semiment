@@ -60,19 +60,24 @@ def main():
 
     if st.button('提交并生成报告') and uploaded_files:
         with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
-            # 用于存储未交订单的前三列数据
-            unfulfilled_orders_summary = pd.DataFrame()
-            df_safety = pd.DataFrame()
-
-            for f in uploaded_files:
+    
+             for f in uploaded_files:
                 filename = f.name
-                if filename not in CONFIG['pivot_config']:
+                if filename not in PIVOT_CONFIG:
                     st.warning(f"跳过未配置的文件: {filename}")
                     continue
 
-                df = pd.read_excel(f)
-                config = CONFIG['pivot_config'][filename]
-                
+                # 替换新旧料号
+                if filename in COLUMN_MAPPING:
+                    mapping = COLUMN_MAPPING[filename]
+                    spec_col, prod_col, wafer_col = mapping["规格"], mapping["品名"], mapping["晶圆品名"]
+                    if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
+                        df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
+                    else:
+                        st.warning(f"⚠️ 文件 {filename} 缺少字段: {spec_col}, {prod_col}, {wafer_col}")
+                else:
+                    st.info(f"📂 文件 {filename} 未定义映射字段，跳过 apply_full_mapping")
+
                
                 pivoted = create_pivot(df, config, filename, mapping_df)
                 sheet_name = filename[:30].rstrip('.xlsx')
