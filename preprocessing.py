@@ -1,6 +1,8 @@
 import pandas as pd
 import streamlit as st
 
+from github_utils import upload_to_github, download_excel_from_repo
+
 def load_df(uploaded, fallback_filename, shown):
     """
     如果上传了文件，就用 pd.read_excel 读取它；
