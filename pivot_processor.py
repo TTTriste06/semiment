@@ -2,6 +2,7 @@ import pandas as pd
 from preprocessing import apply_full_mapping
 from excel_utils import process_date_column
 from config import CONFIG
+import streamlit as st
 
 def process_date_column(df, date_col, date_format):
     """处理日期列，将其转换为 datetime 并创建格式化列"""
@@ -13,11 +14,14 @@ def process_date_column(df, date_col, date_format):
     df[f"{date_col}_年月"] = df[date_col].dt.strftime(date_format)
     return df
 
-def create_pivot(df, config, filename):
+def create_pivot(df, config, filename, mapping_df=None):
     """
-    根据配置创建透视表（支持多 index / columns / values）
+    根据配置创建透视表，自动处理日期格式列名（如 _年月）
     """
     df_copy = df.copy()
+    if 'date_format' in config:
+        config = config.copy()
+        config['columns'] = f"{config['columns']}_年月"
 
     try:
         pivoted = pd.pivot_table(
@@ -39,13 +43,10 @@ def create_pivot(df, config, filename):
     pivoted = pivoted.reset_index()
     return pivoted
 
-
-
 def add_historical_order_columns(pivoted_df, config):
     """
     对透视表添加 '历史订单数量' 与 '历史未交订单数量' 列，并删除原始旧列。
     """
-    # 提取历史月份列（例如 "_2024-12" < selected_month）
     history_cols = [
         col for col in pivoted_df.columns
         if '_' in col and col.split('_')[-1][:4].isdigit() and col.split('_')[-1] < CONFIG['selected_month']
@@ -65,7 +66,6 @@ def add_historical_order_columns(pivoted_df, config):
 
     pivoted_df.drop(columns=history_cols, inplace=True)
 
-    # 控制输出顺序：index列 + 历史订单数量 + 历史未交订单数量 + 其他
     fixed_cols = [col for col in pivoted_df.columns if col not in ['历史订单数量', '历史未交订单数量']]
     if '历史订单数量' in pivoted_df.columns:
         fixed_cols.insert(len(config['index']), '历史订单数量')
