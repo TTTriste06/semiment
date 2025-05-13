@@ -80,7 +80,7 @@ def main():
                 pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
                 st.write("4")
                 adjust_column_width(writer, sheet_name, pivoted)
-                st.write("5")
+                st.write(OUTPUT_FILE)
 
                 # 提取未交订单汇总
                 if filename == "赛卓-未交订单.xlsx":
