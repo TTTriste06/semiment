@@ -75,13 +75,9 @@ def main():
 
                 st.write(df)
                 # 透视
-                st.write("1")
                 pivoted = create_pivot(df, PIVOT_CONFIG[filename], filename)
-                st.write("2")
                 sheet_name = filename.replace('.xlsx', '')[:30]
-                st.write("3")
                 pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
-                st.write("4")
                 adjust_column_width(writer, sheet_name, pivoted)
                 st.write(OUTPUT_FILE)
 
