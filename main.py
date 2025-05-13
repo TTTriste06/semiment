@@ -43,7 +43,11 @@ def main():
         upload_to_github(safety_file, "safety_file.xlsx", "上传安全库存文件")
 
     if st.button('🚀 提交并生成报告') and uploaded_files:
-        mapping_df = pd.read_excel(mapping_file)
+        if mapping_file:
+            mapping_df = pd.read_excel(mapping_file)
+        else:
+            mapping_df = download_excel_from_repo("mapping_file.xlsx")
+
 
         with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
             summary_df = pd.DataFrame()
