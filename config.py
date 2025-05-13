@@ -60,8 +60,8 @@ FULL_MAPPING_COLUMNS = [
 # 每个 sheet 的列名映射（用于 apply_full_mapping）
 COLUMN_MAPPING = {
     "赛卓-未交订单.xlsx":     {"规格": "规格", "品名": "品名", "晶圆品名": "晶圆品名"},
-    "safety_file.xlsx":     {"规格": "OrderInformation", "品名": "ProductionNO.", "晶圆品名": "WaferID"},
-    "pred_file.xlsx":         {"规格": "产品型号", "品名": "ProductionNO.", "晶圆品名": "晶圆品名"},
     "赛卓-成品在制.xlsx":     {"规格": "产品规格", "品名": "产品品名", "晶圆品名": "晶圆型号"},
-    "赛卓-成品库存.xlsx":     {"规格": "规格", "品名": "品名", "晶圆品名": "WAFER品名"}
+    "赛卓-成品库存.xlsx":     {"规格": "规格", "品名": "品名", "晶圆品名": "WAFER品名"},
+    "safety_file.xlsx":     {"规格": "OrderInformation", "品名": "ProductionNO.", "晶圆品名": "WaferID"},
+    "pred_file.xlsx":         {"规格": "产品型号", "品名": "ProductionNO.", "晶圆品名": "晶圆品名"}
 }
