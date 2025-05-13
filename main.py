@@ -32,7 +32,7 @@ def main():
     if pred_file:
         upload_to_github(pred_file, "pred_file.xlsx", "上传预测文件")
     else:
-        download_excel_from_repo("pred_file.xlsx")
+        pred_file = download_excel_from_repo("pred_file.xlsx")
 
     st.write(pred_file)
     st.write(type(pred_file))
@@ -40,7 +40,7 @@ def main():
     if safety_file:
         upload_to_github(safety_file, "safety_file.xlsx", "上传安全库存文件")
     else:
-        download_excel_from_repo("safety_file.xlsx")
+        safety_file = download_excel_from_repo("safety_file.xlsx")
 
     st.write(safety_file)
     st.write(type(safety_file))
@@ -49,7 +49,7 @@ def main():
         mapping_df = pd.read_excel(mapping_file)
         upload_to_github(mapping_file, "mapping_file.xlsx", "上传新旧料号文件")
     else:
-        download_excel_from_repo("mapping_file.xlsx")
+        mapping_df = download_excel_from_repo("mapping_file.xlsx")
     st.write(mapping_file)
     st.write(type(mapping_file))
 
