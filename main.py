@@ -49,43 +49,44 @@ def main():
     
 
     if st.button('提交并生成报告') and uploaded_files:
-        with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
-            for f in uploaded_files:
-                filename = f.name
-                if filename not in PIVOT_CONFIG:
-                    st.warning(f"跳过未配置的文件: {filename}")
-                    continue
-
-                df = pd.read_excel(f)
-                
-                # 替换新旧料号
-                if filename in COLUMN_MAPPING:
-                    mapping = COLUMN_MAPPING[filename]
-                    spec_col, prod_col, wafer_col = mapping["规格"], mapping["品名"], mapping["晶圆品名"]
-                    if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
-                        df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
-                    else:
-                        st.warning(f"⚠️ 文件 {filename} 缺少字段: {spec_col}, {prod_col}, {wafer_col}")
-                else:
-                    st.info(f"📂 文件 {filename} 未定义映射字段，跳过 apply_full_mapping")
-
-                st.write("1")
-
-                pivoted = create_pivot(df, config, filename, mapping_df)
-                sheet_name = filename[:30].rstrip('.xlsx')
-                st.write("2")
-                pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
-                st.write("3")
-                adjust_column_width(writer, sheet_name, pivoted)
-                st.write("4")
-
-                # 保存未交订单的前三列（去重）
-                if filename == "赛卓-未交订单.xlsx":
-                    cols_to_copy = [col for col in pivoted.columns if col in ["晶圆品名", "规格", "品名"]]
-                    unfulfilled_orders_summary = pivoted[cols_to_copy].drop_duplicates()
-                    pending_pivoted = pivoted.copy()
-
+        # 处理上传的核心业务文件
+        for f in uploaded_files:
+            filename = f.name
+            st.markdown(f"### 📄 正在处理文件：{filename}")
     
+            try:
+                df = pd.read_excel(f)
+            except Exception as e:
+                st.warning(f"❌ 无法读取文件 {filename}：{e}")
+                continue
+    
+            # 执行新旧料号替换
+            if filename in COLUMN_MAPPING:
+                mapping = COLUMN_MAPPING[filename]
+                spec_col = mapping['规格']
+                prod_col = mapping['品名']
+                wafer_col = mapping['晶圆品名']
+    
+                if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
+                    df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
+                else:
+                    st.warning(f"⚠️ 文件 {filename} 缺少字段：{spec_col}, {prod_col}, {wafer_col}")
+            else:
+                st.info(f"📂 文件 {filename} 未定义列名映射，跳过新旧料号替换")
+    
+            # 日期格式处理
+            if filename in CONFIG['pivot_config']:
+                pivot_cfg = CONFIG['pivot_config'][filename]
+                if 'date_format' in pivot_cfg and pivot_cfg['columns'] in df.columns:
+                    df = process_date_column(df, pivot_cfg['columns'], pivot_cfg['date_format'])
+    
+                # 创建透视表
+                pivoted = create_pivot(df, pivot_cfg, filename)
+                st.dataframe(pivoted.head())
+            else:
+                st.warning(f"⚠️ 文件 {filename} 未定义透视表配置，已跳过")
+    
+
 
 
         # 下载按钮
