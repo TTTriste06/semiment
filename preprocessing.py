@@ -42,17 +42,17 @@ def apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col, show_chang
         else:
             st.info("ℹ️ 没有任何行被替换")
 
-    # 删除辅助列
-    df.drop(columns=[
-        '旧规格', '旧品名', '旧晶圆品名', '新规格', '新品名', '新晶圆品名',
-        '_原规格', '_原品名', '_原晶圆'
-    ], inplace=True, errors='ignore')
-
     # 🔁 合并同一新料号组合的行（只按规格、品名、晶圆品名）
     group_cols = [wafer_col, spec_col, prod_col]
     value_cols = df.select_dtypes(include='number').columns.tolist()
     df = df.groupby(group_cols, as_index=False)[value_cols].sum()
 
+    # 删除辅助列
+    df.drop(columns=[
+        '旧规格', '旧品名', '旧晶圆品名', '新规格', '新品名', '新晶圆品名',
+        '_原规格', '_原品名', '_原晶圆'
+    ], inplace=True, errors='ignore')
+    
     return df
 
 
