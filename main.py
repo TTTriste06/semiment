@@ -56,7 +56,7 @@ def main():
     st.write(type(mapping_file))
 
     if st.button('提交并生成报告') and uploaded_files:
-        with pd.ExcelWriter(CONFIG['output_file'], engine='openpyxl') as writer:
+        with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
             # 用于存储未交订单的前三列数据
             unfulfilled_orders_summary = pd.DataFrame()
             df_safety = pd.DataFrame()
