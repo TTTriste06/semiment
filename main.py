@@ -76,6 +76,10 @@ def main():
                 if filename == "赛卓-未交订单.xlsx":
                     summary_df = pivoted[['晶圆品名', '规格', '品名']].drop_duplicates()
                     pending_df = pivoted.copy()
+            
+            # 汇总 sheet 初步写入
+            summary_df.to_excel(writer, sheet_name='汇总', index=False, startrow=1)
+            summary_sheet = writer.sheets['汇总']
 
             
 
