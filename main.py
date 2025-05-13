@@ -55,11 +55,12 @@ def main():
                 if filename not in PIVOT_CONFIG:
                     st.warning(f"跳过未配置的文件: {filename}")
                     continue
+
+                df = pd.read_excel(f)
                 
                 # 替换新旧料号
                 if filename in COLUMN_MAPPING:
                     mapping = COLUMN_MAPPING[filename]
-                    st.write(mapping)
                     spec_col, prod_col, wafer_col = mapping["规格"], mapping["品名"], mapping["晶圆品名"]
                     if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
                         df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
