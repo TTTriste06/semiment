@@ -47,12 +47,9 @@ def main():
         mapping_df = download_excel_from_repo("mapping_file.xlsx")
       
     if st.button('🚀 提交并生成报告') and uploaded_files:
-        mapping_df = mapping_file
-        
         with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
             summary_df = pd.DataFrame()
             pending_df = None
-            any_sheet_written = False
 
             # 处理 uploaded_files
             for f in uploaded_files:
@@ -75,55 +72,20 @@ def main():
                     st.info(f"📂 文件 {filename} 未定义映射字段，跳过 apply_full_mapping")
 
                 # 透视
+                st.write("1")
                 pivoted = create_pivot(df, PIVOT_CONFIG[filename], filename)
+                st.write("2")
                 sheet_name = filename.replace('.xlsx', '')[:30]
+                st.write("3")
                 pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
+                st.write("4")
                 adjust_column_width(writer, sheet_name, pivoted)
-                any_sheet_written = True
+                st.write("5")
 
                 # 提取未交订单汇总
                 if filename == "赛卓-未交订单.xlsx":
                     summary_df = pivoted[['晶圆品名', '规格', '品名']].drop_duplicates()
                     pending_df = pivoted.copy()
-
-            # 处理预测表
-            df_pred = pd.read_excel(pred_file)
-            if "赛卓-预测.xlsx" in COLUMN_MAPPING:
-                mapping = COLUMN_MAPPING["赛卓-预测.xlsx"]
-                df_pred = apply_full_mapping(df_pred, mapping_df, mapping["规格"], mapping["品名"], mapping["晶圆品名"])
-            df_pred.to_excel(writer, sheet_name="赛卓-预测", index=False)
-            adjust_column_width(writer, "赛卓-预测", df_pred)
-            any_sheet_written = True
-
-            # 处理安全库存
-            df_safety = pd.read_excel(safety_file)
-            if "赛卓-安全库存.xlsx" in COLUMN_MAPPING:
-                mapping = COLUMN_MAPPING["赛卓-安全库存.xlsx"]
-                df_safety = apply_full_mapping(df_safety, mapping_df, mapping["规格"], mapping["品名"], mapping["晶圆品名"])
-            df_safety.to_excel(writer, sheet_name="赛卓-安全库存", index=False)
-            adjust_column_width(writer, "赛卓-安全库存", df_safety)
-            any_sheet_written = True
-
-            # 写入汇总并合并各部分
-            if not summary_df.empty:
-                summary_df.to_excel(writer, sheet_name='汇总', index=False, startrow=1)
-                summary_sheet = writer.sheets['汇总']
-                merged_summary_df, df_safety = merge_safety_inventory(summary_df, df_safety, summary_sheet)
-
-                if pending_df is not None:
-                    start_col = summary_df.shape[1] + 2 + 1
-                    merge_unfulfilled_orders(summary_sheet, pending_df, start_col)
-
-                merge_prediction_data(summary_sheet, df_pred, summary_df)
-                auto_adjust_column_width_by_worksheet(summary_sheet)
-                add_black_border(summary_sheet, 2, summary_sheet.max_column)
-                any_sheet_written = True
-
-            # 如果没有写入任何内容，强制加提示页防止 openpyxl 报错
-            if not any_sheet_written:
-                pd.DataFrame({"提示": ["未写入任何有效数据"]}).to_excel(writer, sheet_name="提示", index=False)
-
-
 
 
         # 下载按钮
