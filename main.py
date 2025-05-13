@@ -57,8 +57,8 @@ def main():
     
 
     if st.button('提交并生成报告') and uploaded_files:
-        with pd.ExcelWriter(CONFIG['output_file'], engine='openpyxl') as writer:
-    
+        with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
+            st.write(uploaded_files)
              for f in uploaded_files:
                 filename = f.name
                 if filename not in PIVOT_CONFIG:
