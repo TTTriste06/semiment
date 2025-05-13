@@ -8,7 +8,7 @@ from config import (
     FULL_MAPPING_COLUMNS, COLUMN_MAPPING
 )
 from github_utils import upload_to_github, download_excel_from_url, download_excel_from_repo
-from preprocessing import apply_full_mapping, merge_by_material_keys
+from preprocessing import apply_full_mapping
 from pivot_processor import create_pivot
 from excel_utils import adjust_column_width, auto_adjust_column_width_by_worksheet, add_black_border
 from merge_sections import (
@@ -49,7 +49,8 @@ def main():
                     continue
             
                 df = pd.read_excel(f)
-            
+
+                st.write(filename)
                 # 统一新旧料号映射（若该文件定义了列名映射）
                 if filename in COLUMN_MAPPING:
                     mapping = COLUMN_MAPPING[filename]
