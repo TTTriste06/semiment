@@ -50,14 +50,13 @@ def main():
 
     if st.button('提交并生成报告') and uploaded_files:
         with pd.ExcelWriter(OUTPUT_FILE, engine='openpyxl') as writer:
-            st.write(uploaded_files)
             
             for f in uploaded_files:
                 filename = f.name
                 if filename not in PIVOT_CONFIG:
                     st.warning(f"跳过未配置的文件: {filename}")
                     continue
-
+                st.write(uploaded_files)
                 # 替换新旧料号
                 if filename in COLUMN_MAPPING:
                     mapping = COLUMN_MAPPING[filename]
