@@ -8,7 +8,7 @@ from config import (
     FULL_MAPPING_COLUMNS, COLUMN_MAPPING
 )
 from github_utils import upload_to_github, download_excel_from_repo
-from preprocessing import apply_full_mapping
+from preprocessing import apply_full_mapping, load_df
 from pivot_processor import create_pivot
 from excel_utils import adjust_column_width, auto_adjust_column_width_by_worksheet, add_black_border
 from merge_sections import (
@@ -27,20 +27,11 @@ def main():
     uploaded_files, pred_file, safety_file, mapping_file = get_user_inputs()
 
     # 若未上传则从 GitHub 下载
-    if not mapping_file:
-        mapping_file = download_excel_from_repo("mapping_file.xlsx")
-    else:
-        upload_to_github(mapping_file, "mapping_file.xlsx", "上传新旧料号文件")
+    mapping_df = load_df(mapping_file, "mapping_file.xlsx", "上传新旧料号文件")
+    df_pred    = load_df(pred_file,    "pred_file.xlsx", "上传预测文件")
+    df_safety  = load_df(safety_file,  "safety_file.xlsx", "上传安全库存")
+    
 
-    if not pred_file:
-        pred_file = download_excel_from_repo("pred_file.xlsx")
-    else:
-        upload_to_github(pred_file, "pred_file.xlsx", "上传预测文件")
-
-    if not safety_file:
-        safety_file = download_excel_from_repo("safety_file.xlsx")
-    else:
-        upload_to_github(safety_file, "safety_file.xlsx", "上传安全库存文件")
 
     if st.button('🚀 提交并生成报告') and uploaded_files:
         mapping_df = mapping_file
