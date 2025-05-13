@@ -9,22 +9,26 @@ def create_pivot(df, config, filename, mapping_df=None):
     根据配置创建透视表（支持多 index / columns / values），可选进行新旧料号映射。
     """
     df_copy = df.copy()
-    
+
     # 添加 "_年月" 列（如果有日期格式要求）
     if 'date_format' in config and config.get('columns') in df_copy.columns:
         df_copy = process_date_column(df_copy, config['columns'], config['date_format'])
         config = config.copy()  # 不修改原始配置
         config['columns'] = f"{config['columns']}_年月"
 
-    # 创建透视表
-    pivoted = pd.pivot_table(
-        df_copy,
-        index=config['index'],
-        columns=config['columns'],
-        values=config['values'],
-        aggfunc=config['aggfunc'],
-        fill_value=0
-    )
+    try:
+        # 创建透视表
+        pivoted = pd.pivot_table(
+            df_copy,
+            index=config['index'],
+            columns=config['columns'],
+            values=config['values'],
+            aggfunc=config['aggfunc'],
+            fill_value=0
+        )
+    except KeyError as e:
+        st.warning(f"⚠️ 创建透视表失败，字段缺失: {e}")
+        return pd.DataFrame()
 
     # 扁平化多层列名（例如：('订单数量', '2025-03') → '订单数量_2025-03'）
     pivoted.columns = [
@@ -38,6 +42,7 @@ def create_pivot(df, config, filename, mapping_df=None):
         pivoted = add_historical_order_columns(pivoted, config)
 
     return pivoted
+
 
 
 def add_historical_order_columns(pivoted_df, config):
