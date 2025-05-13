@@ -28,6 +28,8 @@ def main():
 
     # 加载文件
     mapping_df = None
+    safety_df = None
+    pred_df = None
 
     if safety_file:
         safety_df = pd.read_excel(safety_file)
