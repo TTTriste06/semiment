@@ -64,16 +64,20 @@ def main():
                     spec_col, prod_col, wafer_col = mapping["规格"], mapping["品名"], mapping["晶圆品名"]
                     if all(col in df.columns for col in [spec_col, prod_col, wafer_col]):
                         df = apply_full_mapping(df, mapping_df, spec_col, prod_col, wafer_col)
-                        st.write(df)
                     else:
                         st.warning(f"⚠️ 文件 {filename} 缺少字段: {spec_col}, {prod_col}, {wafer_col}")
                 else:
                     st.info(f"📂 文件 {filename} 未定义映射字段，跳过 apply_full_mapping")
 
+                st.write("1")
+
                 pivoted = create_pivot(df, config, filename, mapping_df)
                 sheet_name = filename[:30].rstrip('.xlsx')
+                st.write("2")
                 pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
+                st.write("3")
                 adjust_column_width(writer, sheet_name, pivoted)
+                st.write("4")
 
                 # 保存未交订单的前三列（去重）
                 if filename == "赛卓-未交订单.xlsx":
